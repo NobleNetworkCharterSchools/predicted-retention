@@ -11,6 +11,7 @@ Inputs (all as csv files in inputs folder):
 
 import pandas as pd
 import numpy as np
+from modules.predictions import Prediction
 
 def map_numbers(raw_answer, mapping_dict):
     '''applied function to map a raw survey answer to a number'''
@@ -69,7 +70,16 @@ def main(survey_data_file, survey_key_file, persistence_file, trial_file):
     main_df = pd.read_csv(persistence_file, encoding='cp1252', index_col=0)
     main_df = pd.concat([main_df, survey_df], axis=1)
     main_df.to_csv('combined_input_data.csv')
-    print(main_df.info())
+
+    newP = Prediction(main_df,
+            [2012, 2013, 2014, 2015],
+            ['GPA', 'ACT', 'Initial PGR'],
+            'Retention3', 'GPA, ACT, and GR for 2012-2015 Males',
+            [('IsMale', 0)]
+            )
+    newP.to_csv('pred_test.csv')
+    newP.describe()
+
 
 
 
