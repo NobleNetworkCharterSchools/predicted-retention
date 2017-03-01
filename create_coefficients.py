@@ -51,7 +51,7 @@ def process_survey_file(survey_data_file, survey_key_file):
     answers_df.to_csv('scored_answers.csv')
     answers_df.describe().to_csv('scored_answers_stats.csv')
 
-    # Look at internal statistics of each question grouping
+    # Collapse scores into groups for each student
     group_scores = sdf.iloc[:,:1].copy()
     for group, qs in question_hierarchy.items():
         these_qs = answers_df[qs]
@@ -62,10 +62,14 @@ def process_survey_file(survey_data_file, survey_key_file):
     group_scores.to_csv('grouped_answers.csv')
     group_scores.describe().to_csv('grouped_answers_stats.csv')
 
-    # Create a normed score for each student on each question grouping
+    return group_scores
 
 def main(survey_data_file, survey_key_file, persistence_file, trial_file):
-    process_survey_file(survey_data_file, survey_key_file)
+    survey_df = process_survey_file(survey_data_file, survey_key_file)
+    main_df = pd.read_csv(persistence_file, encoding='cp1252', index_col=0)
+    main_df = pd.concat([main_df, survey_df], axis=1)
+    main_df.to_csv('combined_input_data.csv')
+    print(main_df.info())
 
 
 
@@ -73,6 +77,6 @@ if __name__ == '__main__':
     main(
             'inputs/Senior_Survey_Data.csv',
             'inputs/Senior_Survey_Key.csv',
-            'inputs/Alumni_Persistence.csv',
+            'inputs/Persistence_Data.csv',
             'inputs/Trials_Specs.csv'
             )
