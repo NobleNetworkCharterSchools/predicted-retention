@@ -87,3 +87,18 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# editor stuff
+*.swp
+
+# data outputs
+grouped_answers.csv
+grouped_answers_stats.csv
+scored_answers.csv
+scored_answers_stats.csv
+
+# private data inputs
+inputs/Senior_Survey_Data.csv
+inputs/*.xlsx
+inputs/SeniorAlumniSurveyIdeas.docx
+
