@@ -71,14 +71,45 @@ def main(survey_data_file, survey_key_file, persistence_file, trial_file):
     main_df = pd.concat([main_df, survey_df], axis=1)
     main_df.to_csv('combined_input_data.csv')
 
-    newP = Prediction(main_df,
-            [2012, 2013, 2014, 2015],
-            ['GPA', 'ACT', 'Initial PGR'],
-            'Retention3', 'GPA, ACT, and GR for 2012-2015 Males',
-            [('IsMale', 0)]
+    special_colleges = (
+            (145600, 'University of Illinois at Chicago'),
+            (145637, 'University of Illinois at Urbana-Champaign'),
+            (149772, 'Western Illinois University'),
+            (144209, 'City Colleges of Chicago-Harold Washington College'),
+            (145813, 'Illinois State University'),
+            (147776, 'Northeastern Illinois University'),
+            (144218, 'City Colleges of Chicago-Wilbur Wright College'),
+            (170301, 'Hope College'),
+            (149222, 'Southern Illinois University Carbondale'),
+            (148654, 'University of Illinois at Springfield'),
+            (147341, 'Monmouth College'),
+            (144892, 'Eastern Illinois University'),
+            (144740, 'DePaul University'),
+            (148496, 'Dominican University'),
+            (147703, 'Northern Illinois University'),
             )
-    newP.to_csv('pred_test.csv')
-    newP.describe()
+    special_exclude = [x[0] for x in special_colleges]
+    print(special_exclude)
+    results_dfs = []
+    # first do a few sample cases 2013-2014 testing on 2015
+    for require, remove, text in [
+            (None, None, "GPA/GR for '13-14 ('15 test)"),
+            ([('IsMale',1)], None, "GPA/GR for '13-14 ('15 test) Male only"),
+            ([('IsMale',0)], None, "GPA/GR for '13-14 ('15 test) Female only"),
+            (None, [('Initial NCES', special_exclude)],
+                            "GPA/GR for '13-14 ('15 test) no big c"),
+            ([('IsMale',1)], [('Initial NCES', special_exclude)],
+                            "GPA/GR for '13-14 ('15 test) no big c;Male only"),
+            ([('IsMale',0)], [('Initial NCES', special_exclude)],
+                            "GPA/GR for '13-14 ('15 test) no big c;Female only"),
+            ]:
+        newP = Prediction(main_df, [2013, 2014, 2015], ['GPA', 'Initial PGR'],
+            'Retention3', text, require=require, remove=remove,
+            train=[2013, 2014])
+        results_dfs.append(newP.desc_df)
+
+    full_stats = pd.concat(results_dfs)
+    full_stats.to_csv('outcomes_details.csv')
 
 
 
