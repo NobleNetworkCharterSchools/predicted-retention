@@ -102,3 +102,5 @@ inputs/Senior_Survey_Data.csv
 inputs/*.xlsx
 inputs/SeniorAlumniSurveyIdeas.docx
 
+# post-analysis folder
+Analysis/*

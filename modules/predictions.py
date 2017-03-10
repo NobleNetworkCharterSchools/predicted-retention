@@ -23,6 +23,11 @@ class Prediction():
         print(self.df.info())
         print(self.description)
 
+    def make_coef_df(self, trial_name):
+        """Creates a single row DataFrame coefficients"""
+        out_df = pd.DataFrame(self.coefs, columns=['Field', trial_name])
+        out_df = out_df.set_index(['Field'])
+        return out_df.transpose()
 
     def __init__(self, raw_df, years, X, y, title,
             require=None, remove=None, train='RandomSplit'):
@@ -75,7 +80,7 @@ class Prediction():
         self.logreg = LogisticRegression(C=1e9)
         self.logreg.fit(self.train_df[X], self.train_df[y].values.ravel())
         self.coefs = list(zip(X, self.logreg.coef_[0]))
-        self.coefs.append(('intercept', self.logreg.intercept_))
+        self.coefs.append(('intercept', self.logreg.intercept_.tolist()[0]))
         self.train_aoc_score = roc_auc_score(self.train_df[y],
                 self.logreg.predict(self.train_df[X]))
         self.test_aoc_score = roc_auc_score(self.test_df[y],
