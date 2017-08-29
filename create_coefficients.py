@@ -250,6 +250,6 @@ if __name__ == '__main__':
             'inputs/Senior_Survey_Key.csv',
             'inputs/Persistence_Data.csv',
             'inputs/Trials_Specs.csv',
-            gpa='WGPA',
-            outcome='Retention3'
+            gpa='GPA',
+            outcome='Persistence3'
             )

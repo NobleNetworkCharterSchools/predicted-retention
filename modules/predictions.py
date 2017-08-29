@@ -81,24 +81,31 @@ class Prediction():
         self.logreg.fit(self.train_df[X], self.train_df[y].values.ravel())
         self.coefs = list(zip(X, self.logreg.coef_[0]))
         self.coefs.append(('intercept', self.logreg.intercept_.tolist()[0]))
-        self.train_aoc_score = roc_auc_score(self.train_df[y],
-                self.logreg.predict(self.train_df[X]))
-        self.test_aoc_score = roc_auc_score(self.test_df[y],
-                self.logreg.predict(self.test_df[X]))
-                            
+        test_positive = len(self.test_df[self.test_df[y] == 1])
+        test_n = len(self.test_df)
         train_positive = len(self.train_df[self.train_df[y] == 1])
         train_n = len(self.train_df)
+        if test_n == test_positive: # No AOC if 100% positive
+            self.test_aoc_score = -1
+        else:
+            self.test_aoc_score = roc_auc_score(self.test_df[y],
+                self.logreg.predict(self.test_df[X]))
+        if train_n == train_positive:
+            self.train_aoc_score = -1
+        else:
+            self.train_aoc_score = roc_auc_score(self.train_df[y],
+                self.logreg.predict(self.train_df[X]))
+                            
         train_ci = np.sqrt(train_positive/(train_n-train_positive)/train_n)
         self.description = {
-                'Train n': len(self.train_df),
+                'Train n': train_n,
                 'Train %positive': train_positive/train_n,
                 'Train score': self.logreg.score(self.train_df[X],
                                                  self.train_df[y]),
                 'Train AOC': self.train_aoc_score,
                 'Train CI': train_ci,
-                'Test n': len(self.test_df),
-                'Test %positive': len(self.test_df[self.test_df[y] == 1])/
-                                  len(self.test_df),
+                'Test n': test_n,
+                'Test %positive': test_positive/test_n,
                 'Test score': self.logreg.score(self.test_df[X],
                                                  self.test_df[y]),
                 'Test AOC': self.test_aoc_score,
